@@ -16,3 +16,8 @@ class TokenResponse(BaseModel):
     access_token: str
     user_id: int
     token_type: str = "bearer"
+
+
+class DeactivateRequest(BaseModel):
+    user_id: int
+    admin_code: str

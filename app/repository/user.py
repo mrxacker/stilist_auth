@@ -21,3 +21,12 @@ def create(db: Session, username: str, password: str) -> User:
     db.commit()
     db.refresh(user)
     return user
+
+
+def deactivate_user(db: Session, user_id: int) -> User | None:
+    user = get_by_id(db, user_id)
+    if user:
+        user.active = False
+        db.commit()
+        db.refresh(user)
+    return user

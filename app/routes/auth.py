@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.db.session import SessionLocal
-from app.schemas.auth import RegisterRequest, LoginRequest, TokenResponse
+from app.schemas.auth import RegisterRequest, LoginRequest, TokenResponse, DeactivateRequest
 from app.repository import user as user_repo
 from app.core.security import verify_password, create_access_token
 from app.core.config import settings
@@ -43,6 +43,12 @@ def login(data: LoginRequest, db: Session = Depends(get_db)):
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid credentials",
         )
+        
+    if not user.active:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="User account is deactivated",
+        )
 
     token = create_access_token(
         subject=str(user.id),
@@ -50,3 +56,17 @@ def login(data: LoginRequest, db: Session = Depends(get_db)):
     )
 
     return {"access_token": token, "user_id": str(user.id)}
+
+
+
+@router.post("/deactivate", status_code=200)
+def deactivate_user(data: DeactivateRequest, db: Session = Depends(get_db)):
+    if data.admin_code != settings.ADMIN_PASSWORD:
+        raise HTTPException(status_code=400, detail="Invalid admin code")
+
+    user = user_repo.get_by_id(db, data.user_id)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    user_repo.deactivate_user(db, data.user_id)
+    return {"message": "User deactivated"}
