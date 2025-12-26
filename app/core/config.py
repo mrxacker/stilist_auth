@@ -6,6 +6,7 @@ class Settings(BaseSettings):
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     DATABASE_URL: str = "sqlite:///./auth.db"
+    ADMIN_PASSWORD: str = "admin_default_password"
 
     model_config = SettingsConfigDict(
         env_file=".env",
