@@ -7,6 +7,9 @@ from app.core.security import hash_password
 def get_by_username(db: Session, username: str) -> User | None:
     return db.query(User).filter(User.username == username).first()
 
+def get_by_id(db: Session, user_id: int) -> User | None:
+    return db.query(User).filter(User.id == user_id).first()
+
 
 def create(db: Session, username: str, password: str) -> User:
     user = User(

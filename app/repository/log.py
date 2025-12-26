@@ -1,7 +1,6 @@
 from sqlalchemy.orm import Session
 
-from app.models.user import User, Log
-from app.core.security import hash_password
+from app.models.user import Log
 
 
 def get_log_by_user_id(db: Session, user_id: int) -> list[Log] | None:
